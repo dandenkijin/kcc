@@ -31,21 +31,22 @@ kcc -c /path/to/.config -f /path/to/flags.txt -n
 
 ### Command Line Options
 
-| Option | Description | Default |
-|--------|-------------|---------|
-| `-c, --config <CONFIG>` | Path to kernel config file | `/proc/config.gz` |
-| `-f, --flags <FILE>` | Path to flags file (can be specified multiple times) | Required |
-| `--set-flags <FLAGS>` | Specific kernel config flags to check (comma-separated) | Optional |
-| `--set` | Set flags from file (adds missing flags to .config file) | Optional |
-| `-n, --no-color` | Disable colored output | `false` |
-| `-h, --help` | Print help information | - |
-| `-V, --version` | Print version information | - |
+| Option                  | Description                                              | Default           |
+| ----------------------- | -------------------------------------------------------- | ----------------- |
+| `-c, --config <CONFIG>` | Path to kernel config file                               | `/proc/config.gz` |
+| `-f, --flags <FILE>`    | Path to flags file (can be specified multiple times)     | Required          |
+| `--set-flags <FLAGS>`   | Specific kernel config flags to check (comma-separated)  | Optional          |
+| `--set`                 | Set flags from file (adds missing flags to .config file) | Optional          |
+| `-n, --no-color`        | Disable colored output                                   | `false`           |
+| `-h, --help`            | Print help information                                   | -                 |
+| `-V, --version`         | Print version information                                | -                 |
 
 ### Flag File Formats
 
 The tool supports two formats in flag files:
 
 #### Simple Format (One flag per line)
+
 ```
 NAMESPACES
 NET_NS
@@ -55,6 +56,7 @@ MEMCG
 ```
 
 #### Key-Value Format (Flag with value)
+
 ```
 CONFIG_NAMESPACES=y
 CONFIG_NET_NS=y
@@ -63,6 +65,7 @@ CONFIG_CGROUPS=m
 ```
 
 #### Mixed Format (Both formats supported)
+
 ```
 NAMESPACES
 CONFIG_NET_NS=y
@@ -128,34 +131,11 @@ The tool now includes enhanced validation that detects:
 - **Better Feedback**: Clear distinction between missing and invalid flags
 - **Suggestion Engine**: Automatically suggests using `--set` to add missing flags to your config
 
-## Flag Files
-
-The repository includes several example flag files:
-
-- `flags.txt` - Basic container runtime requirements
-- `flags-docker.txt` - Docker-specific kernel requirements
-- `sound-flags.txt` - Audio/sound system requirements
-
-### Custom Flag Files
-
-Create your own flag files to check for specific kernel features:
-
-```bash
-# Create a custom flag file
-cat > my-requirements.txt << EOF
-# Required for my application
-NAMESPACES
-CGROUPS
-NET_NS
-PID_NS
-# Optional but recommended
-USER_NS
-SECCOMP
-EOF
-
 # Check against your requirements
+
 kcc -f my-requirements.txt
-```
+
+````
 
 ## Exit Codes
 
@@ -191,8 +171,7 @@ cargo clippy
 
 # Format code
 cargo fmt
-```
-
+````
 
 ## Contributing
 
@@ -214,7 +193,16 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Changelog
 
+### v0.1.1
+
+- **Enhanced Flag Validation**: Added detection of invalid/non-existent kernel configuration options
+- **Improved Error Reporting**: Clear distinction between missing and invalid flags with colored output
+- **Better Suggestions**: Automatic suggestions to use `--set` for missing flags
+- **Exit Code Updates**: Added exit code 4 for invalid kernel flags
+- **Documentation Updates**: Enhanced README with comprehensive flag validation examples
+
 ### v0.1.0
+
 - Initial release
 - Support for both simple and key-value flag formats
 - Colored output with configurable disabling
