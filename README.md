@@ -11,38 +11,6 @@ A fast and flexible command-line tool to check Linux kernel configuration flags 
 - **Compressed Config Support**: Automatically handles `/proc/config.gz` and other compressed configs
 - **Exit Codes**: Returns proper exit codes for automation (0=success, 1=missing flags)
 
-## Installation
-
-### From Binary (Recommended)
-
-1. Download the latest binary for your platform from the [releases page](https://github.com/yourusername/kcc/releases)
-2. Make it executable:
-   ```bash
-   chmod +x kcc
-   ```
-3. Move it to your PATH:
-   ```bash
-   sudo mv kcc /usr/local/bin/
-   ```
-
-### From Source
-
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/yourusername/kcc.git
-   cd kcc
-   ```
-
-2. Build the project:
-   ```bash
-   cargo build --release
-   ```
-
-3. Install the binary:
-   ```bash
-   sudo cp target/release/kcc /usr/local/bin/
-   ```
-
 ## Usage
 
 ### Basic Usage
