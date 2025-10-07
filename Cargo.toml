@@ -1,9 +1,15 @@
 [package]
 name = "kcc"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
+authors = ["Dan Denkijin"]
+description = "A fast and flexible command-line tool to check Linux kernel configuration flags"
+repository = "https://github.com/dandenkijin/kcc"
+license = "MIT"
+readme = "README.md"
 
 [dependencies]
 clap = { version = "4.0", features = ["derive"] }
 colored = "2.0"
 anyhow = "1.0"
+
