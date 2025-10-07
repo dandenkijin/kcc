@@ -1,0 +1,9 @@
+[package]
+name = "kcc"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+clap = { version = "4.0", features = ["derive"] }
+colored = "2.0"
+anyhow = "1.0"

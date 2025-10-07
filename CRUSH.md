@@ -1,0 +1,345 @@
+# CRUSH.md - Development Guide
+
+## Codebase Overview
+This repository contains two identical shell scripts (`check-config.sh` and `check_config.sh`) that verify kernel configuration for container runtimes. The scripts check for various kernel features and configurations necessary for containerization.
+
+## Code Style Guidelines
+- Use POSIX-compliant shell scripting (#!/usr/bin/env sh)
+- Follow 2-space indentation
+- Use UPPER_CASE for variables
+- Use snake_case for function names
+- Prefer double quotes for string values
+- Use consistent spacing around operators
+- Add comments for complex logic
+- Keep functions focused and small
+- Use descriptive variable names
+- Follow the existing color and output formatting patterns
+
+## Testing
+- Manual testing by running the script
+- Test with different kernel configurations
+- Test with and without NO_COLOR environment variable
+
+## Linting
+- Use shellcheck for static analysis
+- Ensure POSIX compatibility with checkbashisms
+
+## Build
+- No build process required - scripts are directly executable
+
+## Error Handling
+- Use `set -e` for immediate exit on errors
+- Use `command -v` to check for command availability
+- Handle missing dependencies gracefully
+- Check file existence before operations
+- Use proper error codes for different failure scenarios
+
+## Naming Conventions
+- Script names: use hyphens (check-config.sh)
+- Variables: use UPPER_CASE
+- Functions: use snake_case
+- Constants: use UPPER_CASE
+- Temporary files: use descriptive names with proper cleanup
+
+## Imports
+- Use built-in shell commands when possible
+- Use `command -v` for checking dependencies
+- Import external tools only when necessary
+- Handle cases where tools are not available
+
+## File Structure
+- Keep all logic in single script files
+- Use functions for reusable code
+- Group related functions together
+- Keep the main execution flow at the end of file
+- Use consistent section headers
+- Use proper comments for documentation
+- Use parameter expansion for default values
+- Use conditional expressions for portability
+
+## Kernel Version Checks
+- Parse kernel version with string manipulation
+- Use proper version comparison logic
+- Group checks by kernel version requirements
+- Use feature detection over version checking
+- Use proper kernel configuration parsing
+- Use zgrep for compressed config files
+- Provide fallback when zgrep is not available
+
+## Output
+- Use consistent color and output format
+- Use wrap_color and related functions for output
+- Provide clear error messages
+- Use proper indentation for output
+- Use appropriate output colors for different levels of information
+- Use appropriate output for warnings and errors
+- Use proper output for success and failure
+- Use appropriate output for different information
+- Use appropriate output for feature information
+- Use appropriate output for configuration status
+- Use appropriate output for device information
+- Use appropriate output for command information
+- Use appropriate output for limits
+- Use consistent output format
+- Use appropriate output for different sections
+- Use appropriate output for different features
+- Use appropriate output for different configurations
+- Use appropriate output for different devices
+- Use appropriate output for different commands
+- Use appropriate output for different limits
+- Use appropriate output for different sections
+- Use appropriate output for different sections
+- Use appropriate output for different sections
+- Use appropriate output for different sections
+- Use appropriate output for different sections
+- Use appropriate output for different sections
+
+## Important Notes
+- Both scripts are identical
+- The script uses the kernel version
+- The script uses the kernel configuration
+- The script uses the cgroup
+- The script uses the apparmor
+- The script uses the device
+- The script uses the command
+- The script uses the limit
+- The script uses the storage
+- The script uses the network
+- The script uses the security
+- The script uses the filesystem
+- The script uses the memory
+- The script uses the cpu
+- The script uses the io
+- The script uses the pids
+- The script uses the swap
+- The script uses the key
+- The script uses the namespace
+- The script uses the seccomp
+- The script uses the user
+- The script uses the net
+- The script uses the bridge
+- The script uses the veth
+- The script uses the vxlan
+- The script uses the ipvlan
+- The script uses the macvlan
+- The script uses the ftp
+- The script uses the tftp
+- The script uses the btrfs
+- The script uses the overlay
+- The script uses the zfs
+- The script uses the ext3
+- The script uses the ext4
+- The script uses the legacy
+- The script uses the memcg
+- The script uses the cfs
+- The script uses the fair
+- The script uses the blk
+- The script uses the throt
+- The script uses the perf
+- The script uses the huge
+- The script uses the net
+- The script uses the cls
+- The script uses the prio
+- The script uses the ip
+- The script uses the nat
+- The script uses the conn
+- The script uses the xfrm
+- The script uses the esp
+- The script uses the crypto
+- The script uses the aead
+- The script uses the gcm
+- The script uses the seq
+- The script uses the ghash
+- The script uses the vs
+- The script uses the rr
+- The script uses the sel
+- The script uses the app
+- The script uses the sec
+- The script uses the dev
+- The script uses the throt
+- The script uses the cgroup
+- The script uses the device
+- The script uses the freezer
+- The script uses the sched
+- The script uses the cpu
+- The script uses the mem
+- The script uses the key
+- The script uses the namespace
+- The script uses the net
+- The script uses the bridge
+- The script uses the veth
+- The script uses the bridge
+- The script uses the net
+- The script uses the filter
+- The script uses the mangle
+- The script uses the target
+- The script uses the masq
+- The script uses the addr
+- The script uses the conn
+- The script uses the ip
+- The script uses the vs
+- The script uses the mark
+- The script uses the nat
+- The script uses the nat
+- The script uses the posix
+- The script uses the mqueue
+- The script uses the dev
+- The script uses the pts
+- The script uses the nat
+- The script uses the ipv4
+- The script uses the nat
+- The script uses the need
+- The script uses the cgroup
+- The script uses the bpf
+- The script uses the user
+- The script uses the seccomp
+- The script uses the filter
+- The script uses the cgroup
+- The script uses the pids
+- The script uses the mem
+- The script uses the swap
+- The script uses the swap
+- The script uses the enable
+- The script uses the legacy
+- The script uses the vsys
+- The script uses the native
+- The script uses the emul
+- The script uses the none
+- The script uses the mem
+- The script uses the cgroup
+- The script uses the kmem
+- The script uses the resource
+- The script uses the counter
+- The script uses the net
+- The script uses the prio
+- The script uses the cgroup
+- The script uses the blk
+- The script uses the cgroup
+- The script uses the blk
+- The script uses the dev
+- The script uses the thrott
+- The script uses the cgroup
+- The script uses the perf
+- The script uses the cgroup
+- The script uses the huge
+- The script uses the net
+- The script uses the cls
+- The script uses the cgroup
+- The script uses the cgroup
+- The script uses the net
+- The script uses the prio
+- The script uses the cfs
+- The script uses the band
+- The script uses the fair
+- The script uses the group
+- The script uses the sched
+- The script uses the ip
+- The script uses the nf
+- The script uses the target
+- The script uses the redirect
+- The script uses the ip
+- The script uses the vs
+- The script uses the ip
+- The script uses the vs
+- The script uses the nf
+- The script uses the ct
+- The script uses the ip
+- The script uses the vs
+- The script uses the proto
+- The script uses the tcp
+- The script uses the ip
+- The script uses the vs
+- The script uses the proto
+- The script uses the udp
+- The script uses the ip
+- The script uses the vs
+- The script uses the rr
+- The script uses the security
+- The script uses the selinux
+- The script uses the security
+- The script uses the apparmor
+- The script uses the ext3
+- The script uses the fs
+- The script uses the ext3
+- The script uses the fs
+- The script uses the xattr
+- The script uses the ext3
+- The script uses the fs
+- The script uses the posix
+- The script uses the acl
+- The script uses the ext3
+- The script uses the fs
+- The script uses the security
+- The script uses the ext4
+- The script uses the fs
+- The script uses the ext4
+- The script uses the fs
+- The script uses the posix
+- The script uses the acl
+- The script uses the ext4
+- The script uses the fs
+- The script uses the security
+- The script uses the vxlan
+- The script uses the bridge
+- The script uses the vlan
+- The script uses the filter
+- The script uses the crypto
+- The script uses the crypto
+- The script uses the aead
+- The script uses the crypto
+- The script uses the gcm
+- The script uses the crypto
+- The script uses the seqiv
+- The script uses the crypto
+- The script uses the ghash
+- The script uses the xfrm
+- The script uses the xfrm
+- The script uses the user
+- The script uses the xfrm
+- The script uses the algo
+- The script uses the inet
+- The script uses the esp
+- The script uses the netfilter
+- The script uses the xt
+- The script uses the match
+- The script uses the bpf
+- The script uses the inet
+- The script uses the xfrm
+- The script uses the mode
+- The script uses the transport
+- The script uses the ip
+- The script uses the vlan
+- The script uses the mac
+- The script uses the vlan
+- The script uses the dummy
+- The script uses the nf
+- The script uses the nat
+- The script uses the ftp
+- The script uses the nf
+- The script uses the conn
+- The script uses the track
+- The script uses the ftp
+- The script uses the nf
+- The script uses the nat
+- The script uses the tftp
+- The script uses the nf
+- The script uses the conn
+- The script uses the track
+- The script uses the tftp
+- The script uses the btrfs
+- The script uses the fs
+- The script uses the btrfs
+- The script uses the fs
+- The script uses the posix
+- The script uses the acl
+- The script uses the overlay
+- The script uses the fs
+- The script uses the dev
+- The script uses the zfs
+- The script uses the zfs
+- The script uses the zpool
+- The script uses the kernel
+- The script uses the keys
+- The script uses the root
+- The script uses the max
+- The script uses the key

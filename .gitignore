@@ -1,0 +1,125 @@
+# Rust
+target/
+Cargo.lock
+**/*.rs.bk
+*.pdb
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Testing and temporary files
+*.tmp
+*.temp
+test-*.txt
+*.log
+
+# Build artifacts
+*.o
+*.a
+*.so
+*.dylib
+*.dll
+
+# Debug files
+debug/
+release/
+
+# Profiling files
+*.prof
+
+# Dependency directories
+node_modules/
+
+# Output files
+kcc
+*.exe
+
+# Configuration files that might contain sensitive info
+.env
+.env.local
+.env.*.local
+
+# Backup files
+*.bak
+*.backup
+
+# Compiled binaries
+*.out
+*.app
+
+# Coverage reports
+coverage/
+lcov-report/
+
+# Documentation build
+doc/
+
+# Cargo registry and index
+registry/
+index/
+
+# Rust analyzer
+**/.rust-analyzer.toml
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+
+# vim
+*.swp
+*.swo
+*~
+
+# IntelliJ
+.idea/
+*.iws
+*.iml
+*.ipr
+
+# VSCode
+.vscode/
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Linux
+*~
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+
+# Flag files used for testing
+test-flags-*.txt
+
+check*config.sh
+flags*
