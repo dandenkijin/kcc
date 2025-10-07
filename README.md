@@ -206,19 +206,6 @@ cargo clippy
 cargo fmt
 ```
 
-### Project Structure
-
-```
-kcc/
-├── src/
-│   └── main.rs          # Main application code
-├── flags.txt           # Example flag file
-├── flags-docker.txt    # Docker-specific flags
-├── sound-flags.txt     # Audio system flags
-├── .gitignore          # Git ignore file
-├── Cargo.toml          # Rust project configuration
-└── README.md           # This file
-```
 
 ## Contributing
 
@@ -237,11 +224,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - 📋 [Documentation](https://github.com/yourusername/kcc/wiki)
 - 🐛 [Issue Tracker](https://github.com/yourusername/kcc/issues)
 - 💬 [Discussions](https://github.com/yourusername/kcc/discussions)
-
-## Related Tools
-
-- [check-config.sh](https://github.com/docker/docker/blob/master/contrib/check-config.sh) - Original shell script version
-- [kernelconfig](https://github.com/kelseyhightower/kernelconfig) - Alternative kernel config checker
 
 ## Changelog
 
