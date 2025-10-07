@@ -25,6 +25,14 @@ struct Cli {
     /// Disable colored output
     #[arg(short, long)]
     no_color: bool,
+
+    /// Check for flags in the list that are missing from config
+    #[arg(long)]
+    check_incomplete: bool,
+
+    /// Show only missing flags
+    #[arg(long)]
+    check_missing: bool,
 }
 
 #[derive(Debug, PartialEq)]
@@ -32,6 +40,7 @@ enum FlagStatus {
     EnabledInKernel,
     EnabledAsModule,
     Missing,
+    Invalid, // Flag doesn't exist in kernel config options
 }
 
 struct FlagCheckResult {
@@ -45,8 +54,10 @@ impl FlagCheckResult {
             format!("✅ {}", self.name.green())
         } else if self.status == FlagStatus::EnabledAsModule {
             format!("✅ {} (as module)", self.name.green())
-        } else {
+        } else if self.status == FlagStatus::Missing {
             format!("❌ {}", self.name.red())
+        } else {
+            format!("⚠️  {} (invalid flag)", self.name.yellow())
         }
     }
 }
@@ -95,13 +106,39 @@ fn main() -> anyhow::Result<()> {
     println!();
 
     let mut exit_code = 0;
+    let mut missing_flags_in_list = Vec::new();
+    let mut invalid_flags_in_list = Vec::new();
 
-    for flag in all_flags {
-        let result = check_flag(&config_content, &flag);
+    for flag in &all_flags {
+        let result = check_flag(&config_content, flag);
         println!("{}", result.format_output());
         
         if result.status == FlagStatus::Missing {
             exit_code = 1;
+            missing_flags_in_list.push(result.name);
+        } else if result.status == FlagStatus::Invalid {
+            exit_code = 1;
+            invalid_flags_in_list.push(result.name);
+        }
+    }
+
+    // Check for issues with flags in the list
+    if !missing_flags_in_list.is_empty() || !invalid_flags_in_list.is_empty() {
+        println!();
+        if !missing_flags_in_list.is_empty() {
+            println!("⚠️  Flags in your list that are missing from config:");
+            for flag in &missing_flags_in_list {
+                println!("   - {}", flag.red());
+            }
+        }
+        if !invalid_flags_in_list.is_empty() {
+            println!("⚠️  Flags in your list that don't exist in kernel config options:");
+            for flag in &invalid_flags_in_list {
+                println!("   - {}", flag.yellow());
+            }
+        }
+        if !missing_flags_in_list.is_empty() {
+            println!("📝 Consider using --set to add missing flags to your config file");
         }
     }
 
@@ -167,6 +204,37 @@ fn read_flags_file(path: &str) -> anyhow::Result<Vec<String>> {
     Ok(flags)
 }
 
+fn check_kernel_config_exists(flag: &str) -> bool {
+    let path = "/proc/config.gz";
+    
+    if let Ok(config_content) = read_kernel_config(path) {
+        for line in config_content.lines() {
+            if line.starts_with(flag) {
+                return true;
+            }
+        }
+    }
+    
+    // Fallback: try to read directly with zcat
+    use std::process::Command;
+    let output = Command::new("zcat")
+        .arg(path)
+        .output();
+    
+    if let Ok(output) = output {
+        if output.status.success() {
+            let config_content = String::from_utf8_lossy(&output.stdout);
+            for line in config_content.lines() {
+                if line.starts_with(flag) {
+                    return true;
+                }
+            }
+        }
+    }
+    
+    false
+}
+
 fn check_flag(config_content: &str, flag: &str) -> FlagCheckResult {
     // Remove CONFIG_ prefix if it already exists in the input
     let clean_flag = if flag.starts_with("CONFIG_") {
@@ -176,6 +244,14 @@ fn check_flag(config_content: &str, flag: &str) -> FlagCheckResult {
     };
     
     let config_flag = format!("CONFIG_{}=", clean_flag);
+    
+    // Check if the flag actually exists in kernel config options
+    if !check_kernel_config_exists(&config_flag) {
+        return FlagCheckResult {
+            name: format!("CONFIG_{}", clean_flag),
+            status: FlagStatus::Invalid,
+        };
+    }
     
     for line in config_content.lines() {
         if line.starts_with(&config_flag) {

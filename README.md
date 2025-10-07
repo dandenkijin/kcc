@@ -35,6 +35,8 @@ kcc -c /path/to/.config -f /path/to/flags.txt -n
 |--------|-------------|---------|
 | `-c, --config <CONFIG>` | Path to kernel config file | `/proc/config.gz` |
 | `-f, --flags <FILE>` | Path to flags file (can be specified multiple times) | Required |
+| `--set-flags <FLAGS>` | Specific kernel config flags to check (comma-separated) | Optional |
+| `--set` | Set flags from file (adds missing flags to .config file) | Optional |
 | `-n, --no-color` | Disable colored output | `false` |
 | `-h, --help` | Print help information | - |
 | `-V, --version` | Print version information | - |
@@ -94,6 +96,7 @@ kcc -c /boot/config-$(uname -r) -f my-flags.txt
 - ✅ **Green**: Flag is enabled in the kernel
 - ✅ **Green (as module)**: Flag is enabled as a loadable module
 - ❌ **Red**: Flag is missing/not enabled
+- ⚠️ **Yellow**: Flag doesn't exist in kernel configuration options
 
 ### Sample Output
 
@@ -102,13 +105,28 @@ kcc -c /boot/config-$(uname -r) -f my-flags.txt
 📋 Reading flags from files: flags.txt, docker-flags.txt
 
 ✅ CONFIG_NAMESPACES
-✅ CONFIG_NET_NS
 ✅ CONFIG_CGROUPS (as module)
-✅ CONFIG_MEMCG
 ❌ CONFIG_USER_NS
+⚠️ CONFIG_INVALID_FLAG (invalid flag)
+
+⚠️ Flags in your list that don't exist in kernel config options:
+   - CONFIG_INVALID_FLAG
 
 ❌ Some required kernel flags are missing!
 ```
+
+## Enhanced Flag Validation
+
+The tool now includes enhanced validation that detects:
+
+1. **Missing Flags**: Flags that exist in the kernel configuration but are not enabled in your current config
+2. **Invalid Flags**: Flags that don't exist in the kernel configuration options at all
+
+### Flag Validation Benefits
+
+- **Early Detection**: Catch typos and invalid flag names before deployment
+- **Better Feedback**: Clear distinction between missing and invalid flags
+- **Suggestion Engine**: Automatically suggests using `--set` to add missing flags to your config
 
 ## Flag Files
 
@@ -147,6 +165,7 @@ kcc -f my-requirements.txt
 | `1` | One or more required flags are missing |
 | `2` | Invalid command line arguments |
 | `3` | File I/O errors (config or flags file not found) |
+| `4` | Invalid kernel flags (non-existent configuration options) |
 
 ## Development
 
@@ -201,3 +220,5 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - Colored output with configurable disabling
 - Multiple flag file support
 - Compressed kernel config support
+- Enhanced flag validation (detects invalid/non-existent kernel flags)
+- Improved error reporting and suggestions
