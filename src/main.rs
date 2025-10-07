@@ -1,4 +1,3 @@
-use std::env;
 use std::fs;
 use std::path::Path;
 use clap::Parser;
@@ -14,6 +13,14 @@ struct Cli {
     /// Path to flags file containing kernel config flags to check
     #[arg(short, long, value_name = "FILE")]
     flags: Vec<String>,
+
+    /// Specific kernel config flags to check (comma-separated)
+    #[arg(long, value_name = "FLAGS")]
+    set_flags: Vec<String>,
+
+    /// Set flags from file (adds missing flags to .config file)
+    #[arg(long)]
+    set: bool,
 
     /// Disable colored output
     #[arg(short, long)]
@@ -52,20 +59,39 @@ fn main() -> anyhow::Result<()> {
         colored::control::set_override(true);
     }
 
-    if cli.flags.is_empty() {
-        return Err(anyhow::anyhow!("At least one flags file must be specified with -f or --flags"));
+    if cli.flags.is_empty() && cli.set_flags.is_empty() {
+        return Err(anyhow::anyhow!("At least one flags file or set flags must be specified with -f/--flags or --set-flags"));
+    }
+
+    if cli.set {
+        return set_kernel_config_flags(&cli.config, &cli.flags, &cli.set_flags);
     }
 
     let config_content = read_kernel_config(&cli.config)?;
     let mut all_flags = Vec::new();
     
+    // Read flags from files
     for flag_file in &cli.flags {
         let flags = read_flags_file(flag_file)?;
         all_flags.extend(flags);
     }
+    
+    // Add directly set flags (handle comma-separated values)
+    for flags_str in &cli.set_flags {
+        let flags: Vec<String> = flags_str.split(',')
+            .map(|s| s.trim().to_string())
+            .filter(|s| !s.is_empty())
+            .collect();
+        all_flags.extend(flags);
+    }
 
     println!("🔍 Kernel Config Checker - Checking kernel configuration flags from: {}", cli.config);
-    println!("📋 Reading flags from files: {}", cli.flags.join(", "));
+    if !cli.flags.is_empty() {
+        println!("📋 Reading flags from files: {}", cli.flags.join(", "));
+    }
+    if !cli.set_flags.is_empty() {
+        println!("📋 Checking specified flags: {}", cli.set_flags.join(", "));
+    }
     println!();
 
     let mut exit_code = 0;
@@ -172,4 +198,78 @@ fn check_flag(config_content: &str, flag: &str) -> FlagCheckResult {
         name: format!("CONFIG_{}", clean_flag),
         status: FlagStatus::Missing,
     }
+}
+
+fn set_kernel_config_flags(config_path: &str, flag_files: &[String], set_flags: &[String]) -> anyhow::Result<()> {
+    println!("🔧 Adding flags to kernel config file: {}", config_path);
+    
+    let mut all_flags = Vec::new();
+    
+    // Read flags from files
+    for flag_file in flag_files {
+        let flags = read_flags_file(flag_file)?;
+        all_flags.extend(flags);
+        println!("📋 Reading flags from file: {}", flag_file);
+    }
+    
+    // Add directly set flags (handle comma-separated values)
+    for flags_str in set_flags {
+        let flags: Vec<String> = flags_str.split(',')
+            .map(|s| s.trim().to_string())
+            .filter(|s| !s.is_empty())
+            .collect();
+        all_flags.extend(flags);
+        println!("📋 Adding specified flags: {}", flags_str);
+    }
+
+    // Remove duplicates
+    all_flags.sort();
+    all_flags.dedup();
+
+    println!();
+    println!("🎯 Adding {} flags to .config file:", all_flags.len());
+
+    // Read the current config file
+    let config_content = read_kernel_config(config_path)?;
+    let mut config_lines: Vec<String> = config_content.lines().map(|s| s.to_string()).collect();
+    let mut added_count = 0;
+    let mut already_exists_count = 0;
+
+    for flag in &all_flags {
+        let clean_flag = if flag.starts_with("CONFIG_") {
+            &flag[7..]
+        } else {
+            flag
+        };
+        
+        let config_flag = format!("CONFIG_{}=", clean_flag);
+        let config_line = format!("CONFIG_{}=y", clean_flag);
+        
+        // Check if flag already exists
+        let flag_exists = config_lines.iter().any(|line| line.starts_with(&config_flag));
+        
+        if flag_exists {
+            println!("⚠️  {}: already exists", config_flag.yellow());
+            already_exists_count += 1;
+        } else {
+            // Add the flag to the config content at the end
+            config_lines.push(config_line);
+            println!("✅ {}: ADDED", config_flag.green());
+            added_count += 1;
+        }
+    }
+
+    // Join lines with proper newlines and write back
+    let updated_config = config_lines.join("\n") + "\n";
+    fs::write(config_path, &updated_config)?;
+
+    println!();
+    if added_count > 0 {
+        println!("✅ Successfully added {} flags to .config file!", added_count);
+    }
+    if already_exists_count > 0 {
+        println!("ℹ️  {} flags already existed and were not modified.", already_exists_count);
+    }
+
+    Ok(())
 }
